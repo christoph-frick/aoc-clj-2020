@@ -21,8 +21,8 @@
 
 (defn part-1
   []
-  (solution' "input.1" 2))
+  (solution' "1.txt" 2))
 
 (defn part-2
   []
-  (solution' "input.1" 3))
+  (solution' "1.txt" 3))

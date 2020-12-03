@@ -34,12 +34,12 @@
 
 (defn part-1
   []
-  (->> (parse-input "input.2")
+  (->> (parse-input "2.txt")
        (filter valid-frequency?)
        (count)))
 
 (defn part-2
   []
-  (->> (parse-input "input.2")
+  (->> (parse-input "2.txt")
        (filter valid-location?)
        (count)))
