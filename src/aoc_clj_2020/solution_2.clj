@@ -29,11 +29,8 @@
 
 (defn valid-location?
   [{:keys [min max char password]}]
-  (let [check (partial char-at? password char)
-        ci (check min)
-        ca (check max)]
-    ; there is no logical xor
-    (or (and ci (not ca)) (and (not ci) ca))))
+  (let [check (partial char-at? password char)]
+    (not= (check min) (check max))))
 
 (defn part-1
   []
