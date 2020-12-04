@@ -3,5 +3,9 @@
 
 (defn read-input
   [file-name]
+  (-> file-name io/resource io/reader slurp))
+
+(defn read-lines
+  [file-name]
   (with-open [r (-> file-name io/resource io/reader)]
     (doall (line-seq r))))

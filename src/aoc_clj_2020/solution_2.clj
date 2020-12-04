@@ -17,7 +17,7 @@
   [file-name]
   (into []
         (map parse-line)
-        (li/read-input file-name)))
+        (li/read-lines file-name)))
 
 (defn valid-frequency?
   [{:keys [char password] :as entry}]

@@ -6,7 +6,7 @@
   [file-name]
   (into []
         (map #(Integer/parseInt %))
-        (li/read-input file-name)))
+        (li/read-lines file-name)))
 
 (defn sum=2020?
   [xs]

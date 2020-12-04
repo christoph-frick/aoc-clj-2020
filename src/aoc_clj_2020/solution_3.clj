@@ -28,10 +28,10 @@
 
 (defn part-1
   []
-  (->> (li/read-input "3.txt")
+  (->> (li/read-lines "3.txt")
        (count-trees-for-slope {:right 3 :down 1})))
 
 (defn part-2
   []
-  (->> (li/read-input "3.txt")
+  (->> (li/read-lines "3.txt")
        (count-trees slopes)))
