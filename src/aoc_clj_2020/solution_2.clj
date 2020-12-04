@@ -1,6 +1,7 @@
 (ns aoc-clj-2020.solution-2
   (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]))
+            [aoc-clj-2020.util.parse :as lp]
+            [aoc-clj-2020.util.test :as lt]))
 
 (defn parse-line
   [t]
@@ -35,12 +36,8 @@
 
 (defn part-1
   []
-  (->> (parse-input "2.txt")
-       (filter valid-frequency?)
-       (count)))
+  (lt/count-valid valid-frequency? (parse-input "2.txt")))
 
 (defn part-2
   []
-  (->> (parse-input "2.txt")
-       (filter valid-location?)
-       (count)))
+  (lt/count-valid valid-location? (parse-input "2.txt")))

@@ -1,6 +1,7 @@
 (ns aoc-clj-2020.solution-4
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
+            [aoc-clj-2020.util.test :as lt]
             [clojure.string :as str]))
 
 (defn split-passports
@@ -31,10 +32,7 @@
 
 (defn count-valid
   [pred passports]
-  (->> passports
-       (parse-passports)
-       (filter pred)
-       (count)))
+  (lt/count-valid pred (parse-passports passports)))
 
 (defn part-1
   []
