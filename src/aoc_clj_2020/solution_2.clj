@@ -1,11 +1,12 @@
 (ns aoc-clj-2020.solution-2
-  (:require [aoc-clj-2020.util.input :as li]))
+  (:require [aoc-clj-2020.util.input :as li]
+            [aoc-clj-2020.util.parse :as lp]))
 
 (defn parse-line
   [t]
   (let [[_ min max char password] (re-find #"(\d+)-(\d+)\s(.): (.*)" t)]
-    {:min (Integer/parseInt min)
-     :max (Integer/parseInt max)
+    {:min (lp/atoi min)
+     :max (lp/atoi max)
      :char (first char)
      :password password}))
 

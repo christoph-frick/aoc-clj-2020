@@ -1,11 +1,12 @@
 (ns aoc-clj-2020.solution-1
   (:require [aoc-clj-2020.util.input :as li]
+            [aoc-clj-2020.util.parse :as lp]
             [clojure.math.combinatorics :as comb]))
 
 (defn read-numbers
   [file-name]
   (into []
-        (map #(Integer/parseInt %))
+        (map lp/atoi)
         (li/read-lines file-name)))
 
 (defn sum=2020?
