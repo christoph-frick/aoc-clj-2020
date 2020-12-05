@@ -9,4 +9,4 @@
 (deftest test-solution-5
   (are [f r] (= (f) r)
     t/part-1 883
-    t/part-2 nil))
+    t/part-2 532))
