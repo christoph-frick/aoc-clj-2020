@@ -7,7 +7,7 @@
 
 (defn parse-answers
   [s]
-  (->> (str/split s #"\n\n")
+  (->> (lp/split-groups s)
        (mapv (fn [s]
                (mapv (partial into #{})
                      (str/split s #"\n"))))))

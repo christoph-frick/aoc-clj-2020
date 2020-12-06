@@ -4,10 +4,6 @@
             [aoc-clj-2020.util.test :as lt]
             [clojure.string :as str]))
 
-(defn split-passports
-  [s]
-  (str/split s #"(?m)^$"))
-
 (defn split-passport
   [s]
   (re-seq #"(?m)(.{3}):(\S+)" s))
@@ -21,7 +17,7 @@
 
 (defn parse-passports
   [s]
-  (mapv parse-passport (split-passports s)))
+  (mapv parse-passport (lp/split-groups s)))
 
 (def valid-passport-keys
   #{:ecl :pid :eyr :hcl :byr :iyr :hgt})
@@ -112,7 +108,7 @@
    :hcl hex-color?
    :ecl eye-color?
    :pid passport-id?
-   :cid (constantly true) ; cid (Country ID) - ignored, missing or not. 
+   :cid (constantly true) ; cid (Country ID) - ignored, missing or not.
    })
 
 (defn strict-check
