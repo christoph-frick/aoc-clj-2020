@@ -45,11 +45,13 @@
 (defn count-bag-content
   [lines bag]
   (let [lut (into {} (map (juxt :bag :contain)) lines)]
-    (letfn [(total [k]
-              (apply + (mapcat
-                        (fn [{:keys [bag amount]}]
-                          [amount (* (total bag) amount)])
-                        (lut k []))))]
+    (let [total* (fn [total k]
+                   (apply + (mapcat
+                             (fn [{:keys [bag amount]}]
+                               [amount (* (total bag) amount)])
+                             (lut k []))))
+          total (let [t (memoize total*)]
+                  (fn s [n] (t s n)))]
       (total bag))))
 
 (defn part-1
