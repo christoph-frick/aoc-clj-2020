@@ -25,13 +25,15 @@
                     (if (contains? m k)
                       (update m k conj v)
                       (assoc m k #{v})))]
-    (reduce (fn [m {:keys [bag contain]}]
-              (reduce (fn [m {c-bag :bag}]
-                        (assoc-set m c-bag bag))
-                      m
-                      contain))
-            {}
-            lines)))
+    (reduce
+     (fn [m {:keys [bag contain]}]
+       (reduce
+        (fn [m {c-bag :bag}]
+          (assoc-set m c-bag bag))
+        m
+        contain))
+     {}
+     lines)))
 
 (defn find-containing
   [contained bag]
