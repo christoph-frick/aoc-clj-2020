@@ -42,6 +42,16 @@
         (recur (conj result x) (into (disj todo x) (contained x #{}))))
       result)))
 
+(defn count-bag-content
+  [lines bag]
+  (let [lut (into {} (map (juxt :bag :contain)) lines)]
+    (letfn [(total [k]
+              (apply + (mapcat
+                        (fn [{:keys [bag amount]}]
+                          [amount (* (total bag) amount)])
+                        (lut k []))))]
+      (total bag))))
+
 (defn part-1
   []
   (-> (li/read-input "7.txt")
@@ -52,4 +62,6 @@
 
 (defn part-2
   []
-  nil)
+  (-> (li/read-input "7.txt")
+      (parse-lines)
+      (count-bag-content "shiny gold")))
