@@ -25,10 +25,27 @@
           {:op :jmp :ofs -4}
           {:op :acc :ofs 6}])))
 
-(deftest test-run-program
-  (is (= 5 (-> example t/parse-program t/run-program))))
+(deftest test-run-program-error
+  (is (= {:error 5} (-> example
+                        t/parse-program
+                        t/setup-state
+                        t/run-program
+                        :result))))
+
+(deftest test-run-program-success
+  (is (= {:success 1} (-> [{:op :acc :ofs 1}]
+                          t/setup-state
+                          t/run-program
+                          :result))))
+
+(deftest test-fix-program-success
+  (is (= {:success 8} (-> example
+                          t/parse-program
+                          t/setup-state
+                          t/fix-program
+                          :result))))
 
 (deftest test-solution-8
   (are [f r] (= (f) r)
     t/part-1 1744
-    t/part-2 nil))
+    t/part-2 1174))

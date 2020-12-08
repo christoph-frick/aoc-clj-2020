@@ -30,23 +30,75 @@
    :acc op-acc
    :jmp op-jmp})
 
-(defn run-program
+(defn setup-state
   [ops]
-  (loop [{:keys [seen-lines current-line acc] :as state} {:seen-lines #{}
-                                                          :current-line 0
-                                                          :acc 0}]
+  {:seen-lines #{}
+   :current-line 0
+   :prev ()
+   :acc 0
+   :ops ops})
+
+(defn step-program
+  [{:keys [seen-lines current-line acc ops] :as state}]
+  (if (>= current-line (count ops))
+    (assoc state :result {:success acc})
     (if (contains? seen-lines current-line)
-      acc
+      (assoc state :result {:error acc})
       (let [{:keys [op] :as instr} (nth ops current-line)]
-        (recur (update ((dispatch op) state instr) :seen-lines conj current-line))))))
+        (-> state
+            (update :prev conj state)
+            (assoc :instr instr)
+            ((dispatch op) instr)
+            (update :seen-lines conj current-line))))))
+
+(defn run-program
+  [state]
+  (loop [state state]
+    (let [state' (step-program state)]
+      (if (:result state')
+        state'
+        (recur state')))))
+
+(defn problem-candidate?
+  [{:keys [current-line ops]}]
+  (#{:nop :jmp} (:op (nth ops current-line))))
+
+(defn fix-problem-candidate
+  [state]
+  (let [{:keys [current-line]} state]
+    (update-in state [:ops current-line :op] {:jmp :nop
+                                              :nop :jmp})))
+
+(defn success?
+  [state]
+  (boolean (some-> state :result :success)))
+
+(defn fix-program
+  [state]
+  (let [{:keys [prev]} (run-program state)]
+    (reduce
+     (fn [_ state]
+       (let [state (-> state fix-problem-candidate run-program)]
+         (if (success? state)
+           (reduced state)
+           nil)))
+     nil
+     (filter problem-candidate? prev))))
 
 (defn part-1
   []
-  (->>
-   (li/read-lines "8.txt")
-   (parse-program)
-   (run-program)))
+  (->> (li/read-lines "8.txt")
+       (parse-program)
+       (setup-state)
+       (run-program)
+       (:result)
+       (:error)))
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-lines "8.txt")
+       (parse-program)
+       (setup-state)
+       (fix-program)
+       (:result)
+       (:success)))
