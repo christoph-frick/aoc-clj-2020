@@ -5,6 +5,10 @@
   [s]
   (Integer/parseInt s))
 
+(defn atol
+  [s]
+  (Long/parseLong s))
+
 (defn split-groups
   "Split a string on double line breaks"
   [s]
