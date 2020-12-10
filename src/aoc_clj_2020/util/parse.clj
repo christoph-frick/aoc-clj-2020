@@ -9,6 +9,10 @@
   [s]
   (Long/parseLong s))
 
+(defn lines-to
+  [transform s]
+  (mapv transform (str/split-lines s)))
+
 (defn split-groups
   "Split a string on double line breaks"
   [s]
