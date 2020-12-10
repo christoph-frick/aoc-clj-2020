@@ -39,14 +39,18 @@
   [target xs]
   (loop [xs xs]
     (when (seq xs)
-      (let [result (loop [i 2]
-                     (let [frame (take i xs)
-                           sum (apply + frame)]
+      (let [result (loop [mn (first xs)
+                          mx mn
+                          sum mn
+                          remaining (rest xs)]
+                     (let [n (first remaining)
+                           sum (+ sum n)
+                           mn (min mn n)
+                           mx (max mx n)]
                        (if (= sum target)
-                         (apply sorted-set frame)
+                         [mn mx]
                          (when (< sum target)
-                           (recur (inc i))))))]
-
+                           (recur mn mx sum (rest remaining))))))]
         (if result
           result
           (recur (rest xs)))))))
