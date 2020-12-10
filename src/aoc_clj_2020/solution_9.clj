@@ -15,13 +15,13 @@
    (let  [ps (take preamble xs)
           n (first (drop preamble xs))]
      (when n
-       ; optimization: make combinations lazy and find the first
-       ; match instead of doing just a check against the set
-       (let [p-sums (into #{}
-                          (map (partial apply +))
-                          (comb/combinations ps 2))]
+       (let [p-sums (let [indexed (map vector (range) ps)]
+                      (for [a indexed
+                            b indexed
+                            :when (< (first a) (first b))]
+                        (+ (second a) (second b))))]
          (cons
-          {(if (contains? p-sums n)
+          {(if (first (filter (partial = n) p-sums))
              :ok
              :fail)
            n}
