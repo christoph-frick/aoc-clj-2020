@@ -31,6 +31,6 @@
   (is (= 62 (->> example (t/parse) (t/find-weakness 127) (t/sum-weakness)))))
 
 (deftest test-solution-9
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 133015568
     t/part-2 16107959))

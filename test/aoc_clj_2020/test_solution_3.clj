@@ -26,6 +26,6 @@
   (is (= 336 (t/count-trees t/slopes tree-map))))
 
 (deftest test-solution
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 252  
     t/part-2 2608962048))

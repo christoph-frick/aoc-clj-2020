@@ -49,6 +49,6 @@ dark violet bags contain no other bags.")
     example-2 126))
 
 (deftest test-solution-7
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 119
     t/part-2 155802))

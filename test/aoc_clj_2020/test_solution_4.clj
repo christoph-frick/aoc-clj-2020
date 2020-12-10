@@ -161,6 +161,6 @@ iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719")
     all-valid-passports true))
 
 (deftest test-solution
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 222
     t/part-2 140))

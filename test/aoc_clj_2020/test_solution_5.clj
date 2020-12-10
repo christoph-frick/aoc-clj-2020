@@ -7,6 +7,6 @@
     "FBFBBFFRLR" 357))
 
 (deftest test-solution-5
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 883
     t/part-2 532))

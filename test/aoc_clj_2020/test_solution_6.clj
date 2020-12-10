@@ -50,6 +50,6 @@ b")
      #{\b}]))
 
 (deftest test-solution-6
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 6291
     t/part-2 3052))

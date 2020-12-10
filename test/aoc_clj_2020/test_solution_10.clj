@@ -3,6 +3,6 @@
             [aoc-clj-2020.solution-10 :as t]))
 
 (deftest test-solution-10
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 nil
     t/part-2 nil))

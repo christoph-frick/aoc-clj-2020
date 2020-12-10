@@ -37,6 +37,6 @@
     "2-9 c: ccccccccc" false))
 
 (deftest test-solution
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 586  
     t/part-2 352))

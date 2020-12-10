@@ -46,6 +46,6 @@
                           :result))))
 
 (deftest test-solution-8
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1 1744
     t/part-2 1174))

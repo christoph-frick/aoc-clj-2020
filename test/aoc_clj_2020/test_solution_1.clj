@@ -9,6 +9,6 @@
     [1010] false))
 
 (deftest test-solution-1
-  (are [f r] (= (f) r)
+  (are [f r] (= r (f))
     t/part-1          866436
     t/part-2          276650720))
