@@ -88,22 +88,22 @@ L.#.L..#..
           [2 2] #{[1 1] [1 2] [2 1]}}
          (->> "abc\ndef\nghi"
               (t/parse)
-              (t/add-neighbours t/calculate-direct-neighbours)
-              :neighbours))))
+              :grid
+              (t/calculate-direct-neighbours)))))
 
 (deftest test-calculate-visible-neightbours
   (is (= #{}
          ((->> no-visible-neighbour
                (t/parse)
-               (t/add-neighbours t/calculate-visible-neighbours)
-               :neighbours)
+               :grid
+               (t/calculate-visible-neighbours))
           [3 3]))))
 
 (deftest test-surrounding
   (let [{:keys [grid neighbours]}
         (->> "abc\ndef\nghi"
              (t/parse)
-             (t/add-neighbours t/calculate-direct-neighbours))
+             (t/setup t/calculate-direct-neighbours nil))
         coord [1 1]]
     (is (= {\a 1 \b 1 \c 1
             \d 1      \f 1
@@ -127,8 +127,10 @@ L.#.L..#..
     (doseq [[grid grid'] tests]
       (is (= grid' (->> grid
                         (t/parse)
-                        (t/add-neighbours t/calculate-direct-neighbours)
-                        (t/step t/rules-part-1)
+                        (t/setup
+                         t/calculate-direct-neighbours
+                         t/rules-part-1)
+                        (t/step)
                         (t/to-string)))))))
 
 (deftest test-count-occupied
@@ -138,8 +140,10 @@ L.#.L..#..
   (are [rules neighbours-fn plans] (= (last plans)
                                       (->> (first plans)
                                            (t/parse)
-                                           (t/add-neighbours neighbours-fn)
-                                           (t/run rules)
+                                           (t/setup
+                                            neighbours-fn
+                                            rules)
+                                           (t/run)
                                            (t/to-string)))
     t/rules-part-1 t/calculate-direct-neighbours examples-part-1))
 

@@ -73,10 +73,6 @@
                          directions)])
                 (keys grid))))
 
-(defn add-neighbours
-  [neighbours-fn plan]
-  (assoc plan :neighbours (neighbours-fn (:grid plan))))
-
 (defn surrounding
   [grid neighbours coord]
   (frequencies (map grid (neighbours coord ()))))
@@ -94,16 +90,14 @@
                (<= limit (surr occupied-seat 0)))
       empty-seat)))
 
-(def rules-part-1
-  [rule-occupy
-   (rule-empty 4)])
-
-(def rules-part-2
-  [rule-occupy
-   (rule-empty 5)])
+(defn setup
+  [neighbours-fn rules plan]
+  (assoc plan
+         :neighbours (neighbours-fn (:grid plan))
+         :rules rules))
 
 (defn step-cell
-  [rules {:keys [grid neighbours]} coord]
+  [{:keys [grid neighbours rules]} coord]
   (let [init (grid coord)
         surr (surrounding grid neighbours coord)]
     (reduce (fn [last rule]
@@ -114,16 +108,16 @@
             rules)))
 
 (defn step
-  [rules {:keys [grid] :as plan}]
+  [{:keys [grid] :as plan}]
   (let [grid' (into {}
                     (map (fn [coord]
-                           [coord (step-cell rules plan coord)])
+                           [coord (step-cell plan coord)])
                          (keys grid)))]
     (assoc plan :grid grid')))
 
 (defn run
-  [rules grid]
-  (liter/stabilize (partial step rules) grid))
+  [plan]
+  (liter/stabilize step plan))
 
 (defn count-occupied
   [{:keys [grid]}]
@@ -132,18 +126,30 @@
        (filter (partial = occupied-seat))
        (count)))
 
+(def rules-part-1
+  [rule-occupy
+   (rule-empty 4)])
+
+(def rules-part-2
+  [rule-occupy
+   (rule-empty 5)])
+
 (defn part-1
   []
   (->> (li/read-input "11.txt")
        (parse)
-       (add-neighbours calculate-direct-neighbours)
-       (run rules-part-1)
+       (setup
+        calculate-direct-neighbours
+        rules-part-1)
+       (run)
        (count-occupied)))
 
 (defn part-2
   []
   (->> (li/read-input "11.txt")
        (parse)
-       (add-neighbours calculate-visible-neighbours)
-       (run rules-part-2)
+       (setup
+        calculate-visible-neighbours
+        rules-part-2)
+       (run)
        (count-occupied)))
