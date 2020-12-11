@@ -48,15 +48,21 @@
   [[x y] [x-offs y-offs]]
   [(+ x x-offs) (+ y y-offs)])
 
+(defn make-calculate-neighbour
+  [direction-fn grid]
+  (fn [coord]
+    (into #{}
+          (comp
+           (map (partial direction-fn coord))
+           (filter (partial seat? grid)))
+          directions)))
+
 (defn calculate-direct-neighbours
   [grid]
   (map-grid
-   (fn [coord]
-     (into #{}
-           (comp
-            (map (partial add-coord coord))
-            (filter (partial seat? grid)))
-           directions))
+   (make-calculate-neighbour
+    add-coord
+    grid)
    grid))
 
 (defn find-visible-neighbour
@@ -69,14 +75,10 @@
 
 (defn calculate-visible-neighbours
   [grid]
-  ; FIXME: dedupe with calculate-direct-neighbours
   (map-grid
-   (fn [coord]
-     (into #{}
-           (comp
-            (map (partial find-visible-neighbour grid coord))
-            (filter (partial seat? grid)))
-           directions))
+   (make-calculate-neighbour
+    (partial find-visible-neighbour grid)
+    grid)
    grid))
 
 (defn surrounding
