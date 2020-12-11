@@ -1,4 +1,4 @@
-(ns aoc-clj-2020.test-solution-22
+(ns ^:day-22 aoc-clj-2020.test-solution-22
   (:require [clojure.test :refer [deftest testing is are]]
             [aoc-clj-2020.solution-22 :as t]))
 
