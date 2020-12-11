@@ -63,6 +63,7 @@
 
 (defn calculate-visible-neighbours
   [grid]
+  ; FIXME: dedupe with calculate-direct-neighbours
   (into {} (map (fn [coord]
                   [coord
                    (into #{}
