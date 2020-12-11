@@ -49,11 +49,25 @@
 3")
 
 (deftest test-differences
-  (are [input result] (= result (-> input t/parse t/differences))
+  (are [input result] (= result (-> input t/parse t/prepare t/differences))
     example-1 {1 7, 3 5}
     example-2 {1 22, 3 10}))
+
+(deftest test-valid-distance?
+  (are [a b r] (= r (t/valid-distance? a b))
+    0 0 false
+    0 1 true
+    0 2 true
+    0 3 true
+    0 4 false))
+
+(deftest test-combinations
+  (are [input result] (= result (-> input t/parse t/prepare t/combinations))
+    example-1 8
+    example-2 19208))
 
 (deftest test-solution-10
   (are [f r] (= r (f))
     t/part-1 2176
-    t/part-2 nil))
+    ; giving up for now
+    #_#_t/part-2 nil))
