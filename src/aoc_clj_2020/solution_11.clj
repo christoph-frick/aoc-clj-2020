@@ -135,22 +135,24 @@
   [rule-occupy
    (rule-empty 5)])
 
-(defn part-1
-  []
+(defn run-part
+  [neighbours-fn rules]
   (->> (li/read-input "11.txt")
        (parse)
        (setup
-        calculate-direct-neighbours
-        rules-part-1)
+        neighbours-fn
+        rules)
        (run)
        (count-occupied)))
 
+(defn part-1
+  []
+  (run-part
+   calculate-direct-neighbours
+   rules-part-1))
+
 (defn part-2
   []
-  (->> (li/read-input "11.txt")
-       (parse)
-       (setup
-        calculate-visible-neighbours
-        rules-part-2)
-       (run)
-       (count-occupied)))
+  (run-part
+   calculate-visible-neighbours
+   rules-part-2))
