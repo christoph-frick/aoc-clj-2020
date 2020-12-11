@@ -21,6 +21,10 @@
                                              row))
                               rows))}))
 
+(defn map-grid
+  [coord-fn grid]
+  (into {} (map (juxt identity coord-fn) (keys grid))))
+
 (defn to-string
   [{:keys [width height grid]}]
   (str/join "\n"
@@ -44,14 +48,14 @@
 
 (defn calculate-direct-neighbours
   [grid]
-  (into {} (map (fn [coord]
-                  [coord
-                   (into #{}
-                         (comp
-                          (map (partial add-coord coord))
-                          (filter #(seat? (grid % no-seat))))
-                         directions)])
-                (keys grid))))
+  (map-grid
+   (fn [coord]
+     (into #{}
+           (comp
+            (map (partial add-coord coord))
+            (filter #(seat? (grid % no-seat))))
+           directions))
+   grid))
 
 (defn find-visible-neighbour
   [grid coord offs]
@@ -64,14 +68,14 @@
 (defn calculate-visible-neighbours
   [grid]
   ; FIXME: dedupe with calculate-direct-neighbours
-  (into {} (map (fn [coord]
-                  [coord
-                   (into #{}
-                         (comp
-                          (map (partial find-visible-neighbour grid coord))
-                          (filter some?))
-                         directions)])
-                (keys grid))))
+  (map-grid
+   (fn [coord]
+     (into #{}
+           (comp
+            (map (partial find-visible-neighbour grid coord))
+            (filter some?))
+           directions))
+   grid))
 
 (defn surrounding
   [grid neighbours coord]
@@ -109,10 +113,7 @@
 
 (defn step
   [{:keys [grid] :as plan}]
-  (let [grid' (into {}
-                    (map (fn [coord]
-                           [coord (step-cell plan coord)])
-                         (keys grid)))]
+  (let [grid' (map-grid (partial step-cell plan) grid)]
     (assoc plan :grid grid')))
 
 (defn run
