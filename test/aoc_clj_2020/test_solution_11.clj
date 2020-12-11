@@ -117,7 +117,7 @@ L.#.L..#..
     t/empty-seat {t/occupied-seat 1} nil))
 
 (deftest test-rule-empty
-  (are [init surr result] (= result ((t/rule-empty 4) init surr))
+  (are [init surr result] (= result ((t/make-rule-empty 4) init surr))
     t/occupied-seat {t/occupied-seat 3} nil
     t/occupied-seat {} nil
     t/occupied-seat {t/occupied-seat 4} t/empty-seat))

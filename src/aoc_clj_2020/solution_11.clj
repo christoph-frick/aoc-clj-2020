@@ -87,7 +87,7 @@
              (zero? (surr occupied-seat 0)))
     occupied-seat))
 
-(defn rule-empty
+(defn make-rule-empty
   [limit]
   (fn [init surr]
     (when (and (= occupied-seat init)
@@ -129,11 +129,11 @@
 
 (def rules-part-1
   [rule-occupy
-   (rule-empty 4)])
+   (make-rule-empty 4)])
 
 (def rules-part-2
   [rule-occupy
-   (rule-empty 5)])
+   (make-rule-empty 5)])
 
 (defn run-part
   [neighbours-fn rules]
