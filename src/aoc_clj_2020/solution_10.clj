@@ -26,15 +26,10 @@
   [a b]
   (<= 1 (- b a) 3))
 
-; failed attempts
-; - just counting the possible branches: fails due to following branches depend on previous ones
-; - using a zipper to count the end nodes: works, but no result after minutes for the real data
-; - using a tree-seq to count the end nodes: dito zipper
-; giving up for now:
-; need some insipration for this kind of graph (one start, one end, many paths)
 (defn combinations
   [prepared]
-  (let [adj-map (loop [xs prepared
+  (let [goal (last prepared)
+        adj-map (loop [xs prepared
                        r {}]
                   (if (seq xs)
                     (recur (rest xs)
@@ -46,11 +41,13 @@
                                (assoc r f children)
                                r)))
                     r))
-        ]
-        (println (frequencies (map count (vals adj-map))))
-    (->> (tree-seq adj-map adj-map 0)
-         (filter (partial = (last prepared)))
-         (count))))
+        total* (fn [total k]
+                 (if (= goal k)
+                   1
+                   (apply + (map total (get adj-map k)))))
+        total (let [t (memoize total*)]
+                (fn s [n] (t s n)))]
+    (total 0)))
 
 (defn result
   [freqs]

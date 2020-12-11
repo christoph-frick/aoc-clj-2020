@@ -69,5 +69,4 @@
 (deftest test-solution-10
   (are [f r] (= r (f))
     t/part-1 2176
-    ; giving up for now
-    #_#_t/part-2 nil))
+    t/part-2 18512297918464))
