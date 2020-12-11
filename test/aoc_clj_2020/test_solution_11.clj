@@ -67,12 +67,31 @@ L.#.L..#..
 (deftest test-parse-format-roundtrip
   (is (= (first examples) (-> (first examples) t/parse t/to-string))))
 
+(deftest test-calculate-direct-neighbours
+  (is (= {[0 0] #{[0 1] [1 0] [1 1]},
+          [0 1] #{[0 0] [0 2] [1 0] [1 1] [1 2]},
+          [0 2] #{[0 1] [1 1] [1 2]},
+          [1 0] #{[0 0] [0 1] [1 1] [2 0] [2 1]},
+          [1 1] #{[0 0] [0 1] [0 2] [1 0] [1 2] [2 0] [2 1] [2 2]},
+          [1 2] #{[0 1] [0 2] [1 1] [2 1] [2 2]},
+          [2 0] #{[1 0] [1 1] [2 1]},
+          [2 1] #{[1 0] [1 1] [1 2] [2 0] [2 2]},
+          [2 2] #{[1 1] [1 2] [2 1]}}
+         (->> "abc\ndef\nghi"
+              (t/parse)
+              (t/add-neighbours t/calculate-direct-neighbours)
+              :neighbours))))
+
 (deftest test-surrounding
-  (let [{:keys [grid]} (-> "abc\ndef\nghi" t/parse)]
+  (let [{:keys [grid neighbours]}
+        (->> "abc\ndef\nghi"
+             (t/parse)
+             (t/add-neighbours t/calculate-direct-neighbours))
+        coord [1 1]]
     (is (= {\a 1 \b 1 \c 1
             \d 1      \f 1
             \g 1 \h 1 \i 1}
-           (t/surrounding grid [1 1])))))
+           (t/surrounding grid neighbours coord)))))
 
 (deftest test-rule-occupy
   (are [init surr result] (= result (t/rule-occupy init surr))
@@ -89,7 +108,11 @@ L.#.L..#..
 (deftest test-step
   (let [tests (partition 2 1 examples)]
     (doseq [[grid grid'] tests]
-      (is (= grid' (->> grid (t/parse) (t/step t/rules) (t/to-string)))))))
+      (is (= grid' (->> grid
+                        (t/parse)
+                        (t/add-neighbours t/calculate-direct-neighbours)
+                        (t/step t/rules)
+                        (t/to-string)))))))
 
 (deftest test-count-occupied
   (is (= 37 (->> (last examples) t/parse t/count-occupied))))
@@ -98,6 +121,7 @@ L.#.L..#..
   (is (= (last examples)
          (->> (first examples)
               (t/parse)
+              (t/add-neighbours t/calculate-direct-neighbours)
               (t/run t/rules)
               (t/to-string)))))
 

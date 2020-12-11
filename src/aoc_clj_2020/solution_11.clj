@@ -28,15 +28,26 @@
               (str/join (for [x (range width)]
                           (grid [x y]))))))
 
+(defn calculate-direct-neighbours
+  [grid]
+  (into {} (map (fn [[cx cy]]
+                  [[cx cy]
+                   (into #{}
+                         (for [x (range -1 2)
+                               y (range -1 2)
+                               :when (not (and (zero? x) (zero? y)))
+                               :let [coord [(+ cx x) (+ cy y)]]
+                               :when (not= no-seat (grid coord no-seat))]
+                           coord))])
+                (keys grid))))
+
+(defn add-neighbours
+  [neighbours-fn plan]
+  (assoc plan :neighbours (neighbours-fn (:grid plan))))
+
 (defn surrounding
-  [grid [cx cy]]
-  (frequencies
-   (for [x (range -1 2)
-         y (range -1 2)
-         :when (not (and (zero? x) (zero? y)))
-         :let [cell (grid [(+ cx x) (+ cy y)])]
-         :when cell]
-     cell)))
+  [grid neighbours coord]
+  (frequencies (map grid (neighbours coord ()))))
 
 (defn rule-occupy
   [init surr]
@@ -54,10 +65,10 @@
   [rule-occupy
    rule-empty])
 
-(defn step-1
-  [rules grid coord]
+(defn step-cell
+  [rules {:keys [grid neighbours]} coord]
   (let [init (grid coord)
-        surr (surrounding grid coord)]
+        surr (surrounding grid neighbours coord)]
     (reduce (fn [last rule]
               (if-let [next (rule init surr)]
                 (reduced next)
@@ -69,7 +80,7 @@
   [rules {:keys [grid] :as plan}]
   (let [grid' (into {}
                     (map (fn [coord]
-                           [coord (step-1 rules grid coord)])
+                           [coord (step-cell rules plan coord)])
                          (keys grid)))]
     (assoc plan :grid grid')))
 
@@ -88,6 +99,7 @@
   []
   (->> (li/read-input "11.txt")
        (parse)
+       (add-neighbours calculate-direct-neighbours)
        (run rules)
        (count-occupied)))
 
