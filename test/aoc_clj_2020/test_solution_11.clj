@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest testing is are]]
             [aoc-clj-2020.solution-11 :as t]))
 
-(def examples
+(def examples-part-1
   ["L.LL.LL.LL
 LLLLLLL.LL
 L.L.L..L..
@@ -64,8 +64,17 @@ L.#.L..#..
 #.LLLLLL.L
 #.#L#L#.##"])
 
+(def no-visible-neighbour
+  ".##.##.
+#.#.#.#
+##...##
+...L...
+##...##
+#.#.#.#
+.##.##.")
+
 (deftest test-parse-format-roundtrip
-  (is (= (first examples) (-> (first examples) t/parse t/to-string))))
+  (is (= (first examples-part-1) (-> (first examples-part-1) t/parse t/to-string))))
 
 (deftest test-calculate-direct-neighbours
   (is (= {[0 0] #{[0 1] [1 0] [1 1]},
@@ -81,6 +90,14 @@ L.#.L..#..
               (t/parse)
               (t/add-neighbours t/calculate-direct-neighbours)
               :neighbours))))
+
+(deftest test-calculate-visible-neightbours
+  (is (= #{}
+         ((->> no-visible-neighbour
+               (t/parse)
+               (t/add-neighbours t/calculate-visible-neighbours)
+               :neighbours)
+          [3 3]))))
 
 (deftest test-surrounding
   (let [{:keys [grid neighbours]}
@@ -100,32 +117,33 @@ L.#.L..#..
     t/empty-seat {t/occupied-seat 1} nil))
 
 (deftest test-rule-empty
-  (are [init surr result] (= result (t/rule-empty init surr))
+  (are [init surr result] (= result ((t/rule-empty 4) init surr))
     t/occupied-seat {t/occupied-seat 3} nil
     t/occupied-seat {} nil
     t/occupied-seat {t/occupied-seat 4} t/empty-seat))
 
 (deftest test-step
-  (let [tests (partition 2 1 examples)]
+  (let [tests (partition 2 1 examples-part-1)]
     (doseq [[grid grid'] tests]
       (is (= grid' (->> grid
                         (t/parse)
                         (t/add-neighbours t/calculate-direct-neighbours)
-                        (t/step t/rules)
+                        (t/step t/rules-part-1)
                         (t/to-string)))))))
 
 (deftest test-count-occupied
-  (is (= 37 (->> (last examples) t/parse t/count-occupied))))
+  (is (= 37 (->> (last examples-part-1) t/parse t/count-occupied))))
 
 (deftest test-run
-  (is (= (last examples)
-         (->> (first examples)
-              (t/parse)
-              (t/add-neighbours t/calculate-direct-neighbours)
-              (t/run t/rules)
-              (t/to-string)))))
+  (are [rules neighbours-fn plans] (= (last plans)
+                                      (->> (first plans)
+                                           (t/parse)
+                                           (t/add-neighbours neighbours-fn)
+                                           (t/run rules)
+                                           (t/to-string)))
+    t/rules-part-1 t/calculate-direct-neighbours examples-part-1))
 
 (deftest test-solution-11
   (are [f r] (= r (f))
     t/part-1 2418
-    t/part-2 nil))
+    t/part-2 2144))

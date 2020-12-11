@@ -28,6 +28,10 @@
               (str/join (for [x (range width)]
                           (grid [x y]))))))
 
+(defn seat?
+  [maybe-seat]
+  (not= no-seat maybe-seat))
+
 (defn calculate-direct-neighbours
   [grid]
   (into {} (map (fn [[cx cy]]
@@ -37,9 +41,36 @@
                                y (range -1 2)
                                :when (not (and (zero? x) (zero? y)))
                                :let [coord [(+ cx x) (+ cy y)]]
-                               :when (not= no-seat (grid coord no-seat))]
+                               :when (seat? (grid coord no-seat))]
                            coord))])
                 (keys grid))))
+
+(defn add-coord
+  [[x y] [x-offs y-offs]]
+  [(+ x x-offs) (+ y y-offs)])
+
+(defn find-neighbour
+  [grid coord offs]
+  (loop [curr (add-coord coord offs)]
+    (when (contains? grid curr)
+      (if (seat? (grid curr))
+        curr
+        (recur (add-coord curr offs))))))
+
+(defn calculate-visible-neighbours
+  [grid]
+  (let [dirs (for [x (range -1 2)
+                   y (range -1 2)
+                   :when (not (and (zero? x) (zero? y)))]
+               [x y])]
+    (into {} (map (fn [coord]
+                    [coord
+                     (into #{}
+                           (comp
+                            (map (partial find-neighbour grid coord))
+                            (filter some?))
+                           dirs)])
+                  (keys grid)))))
 
 (defn add-neighbours
   [neighbours-fn plan]
@@ -56,14 +87,19 @@
     occupied-seat))
 
 (defn rule-empty
-  [init surr]
-  (when (and (= occupied-seat init)
-             (<= 4 (surr occupied-seat 0)))
-    empty-seat))
+  [limit]
+  (fn [init surr]
+    (when (and (= occupied-seat init)
+               (<= limit (surr occupied-seat 0)))
+      empty-seat)))
 
-(def rules
+(def rules-part-1
   [rule-occupy
-   rule-empty])
+   (rule-empty 4)])
+
+(def rules-part-2
+  [rule-occupy
+   (rule-empty 5)])
 
 (defn step-cell
   [rules {:keys [grid neighbours]} coord]
@@ -100,9 +136,13 @@
   (->> (li/read-input "11.txt")
        (parse)
        (add-neighbours calculate-direct-neighbours)
-       (run rules)
+       (run rules-part-1)
        (count-occupied)))
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-input "11.txt")
+       (parse)
+       (add-neighbours calculate-visible-neighbours)
+       (run rules-part-2)
+       (count-occupied)))
