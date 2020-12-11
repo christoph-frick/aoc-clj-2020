@@ -33,8 +33,10 @@
                           (grid [x y]))))))
 
 (defn seat?
-  [maybe-seat]
-  (not= no-seat maybe-seat))
+  ([maybe-seat]
+   (not (contains? #{no-seat nil} maybe-seat)))
+  ([grid coord]
+   (seat? (grid coord))))
 
 (def directions
   (for [x (range -1 2)
@@ -53,7 +55,7 @@
      (into #{}
            (comp
             (map (partial add-coord coord))
-            (filter #(seat? (grid % no-seat))))
+            (filter (partial seat? grid)))
            directions))
    grid))
 
@@ -61,7 +63,7 @@
   [grid coord offs]
   (loop [curr (add-coord coord offs)]
     (when (contains? grid curr)
-      (if (seat? (grid curr))
+      (if (seat? grid curr)
         curr
         (recur (add-coord curr offs))))))
 
@@ -73,7 +75,7 @@
      (into #{}
            (comp
             (map (partial find-visible-neighbour grid coord))
-            (filter some?))
+            (filter (partial seat? grid)))
            directions))
    grid))
 
