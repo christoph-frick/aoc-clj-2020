@@ -32,24 +32,28 @@
   [maybe-seat]
   (not= no-seat maybe-seat))
 
-(defn calculate-direct-neighbours
-  [grid]
-  (into {} (map (fn [[cx cy]]
-                  [[cx cy]
-                   (into #{}
-                         (for [x (range -1 2)
-                               y (range -1 2)
-                               :when (not (and (zero? x) (zero? y)))
-                               :let [coord [(+ cx x) (+ cy y)]]
-                               :when (seat? (grid coord no-seat))]
-                           coord))])
-                (keys grid))))
+(def directions
+  (for [x (range -1 2)
+        y (range -1 2)
+        :when (not (and (zero? x) (zero? y)))]
+    [x y]))
 
 (defn add-coord
   [[x y] [x-offs y-offs]]
   [(+ x x-offs) (+ y y-offs)])
 
-(defn find-neighbour
+(defn calculate-direct-neighbours
+  [grid]
+  (into {} (map (fn [coord]
+                  [coord
+                   (into #{}
+                         (comp
+                          (map (partial add-coord coord))
+                          (filter #(seat? (grid % no-seat))))
+                         directions)])
+                (keys grid))))
+
+(defn find-visible-neighbour
   [grid coord offs]
   (loop [curr (add-coord coord offs)]
     (when (contains? grid curr)
@@ -59,18 +63,14 @@
 
 (defn calculate-visible-neighbours
   [grid]
-  (let [dirs (for [x (range -1 2)
-                   y (range -1 2)
-                   :when (not (and (zero? x) (zero? y)))]
-               [x y])]
-    (into {} (map (fn [coord]
-                    [coord
-                     (into #{}
-                           (comp
-                            (map (partial find-neighbour grid coord))
-                            (filter some?))
-                           dirs)])
-                  (keys grid)))))
+  (into {} (map (fn [coord]
+                  [coord
+                   (into #{}
+                         (comp
+                          (map (partial find-visible-neighbour grid coord))
+                          (filter some?))
+                         directions)])
+                (keys grid))))
 
 (defn add-neighbours
   [neighbours-fn plan]
