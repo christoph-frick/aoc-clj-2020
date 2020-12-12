@@ -51,10 +51,6 @@
   [[ax ay] [bx by]]
   [(+ ax bx) (+ ay by)])
 
-(defn pos-rel
-  [[ax ay] [bx by]]
-  [(- bx ax) (- by ay)])
-
 (defn pos-scale
   [[ax ay] factor]
   [(* ax factor) (* ay factor)])
@@ -69,15 +65,29 @@
   [pos dir amt]
   (pos-translate pos (pos-scale dir amt)))
 
-(defn rotate-ship
-  [{:keys [dir] :as state} {:keys [op amt]}]
-  (assoc state
-         :dir (rel-rot-in directions dir op amt)))
+(defn step-1
+  [rules state {:keys [op] :as instr}]
+  ((rules op) state instr))
+
+(defn run
+  [rules initial-state instrs]
+  (reduce (partial step-1 rules) initial-state instrs))
+
+(defn distance
+  [{:keys [pos] :as state}]
+  (apply + (map #(Math/abs %) pos)))
+
+; part 1
 
 (defn move-ship-by
   [{:keys [pos] :as state} {:keys [amt]} dir]
   (assoc state
          :pos (move pos dir amt)))
+
+(defn rotate-ship
+  [{:keys [dir] :as state} {:keys [op amt]}]
+  (assoc state
+         :dir (rel-rot-in directions dir op amt)))
 
 (defn move-ship
   [state {:keys [op] :as instr}]
@@ -99,6 +109,8 @@
    :F move-ship-by-dir
    :R rotate-ship
    :L rotate-ship})
+
+; part 2
 
 (defn move-ship-by-wp
   [{:keys [wp] :as state} instr]
@@ -128,28 +140,21 @@
    :R rotate-wp
    :L rotate-wp})
 
-(defn step-1
-  [rules state {:keys [op] :as instr}]
-  ((rules op) state instr))
-
-(defn run
-  [rules initial-state instrs]
-  (reduce (partial step-1 rules) initial-state instrs))
-
-(defn distance
-  [{:keys [pos] :as state}]
-  (apply + (map #(Math/abs %) pos)))
+(defn part
+  [input rules initial-state]
+  (->> (li/read-input input)
+       (parse)
+       (run rules initial-state)
+       (distance)))
 
 (defn part-1
   []
-  (->> (li/read-input "12.txt")
-       (parse)
-       (run rules-1 initial-state-1)
-       (distance)))
+  (part "12.txt"
+        rules-1
+        initial-state-1))
 
 (defn part-2
   []
-  (->> (li/read-input "12.txt")
-       (parse)
-       (run rules-2 initial-state-2)
-       (distance)))
+  (part "12.txt"
+        rules-2
+        initial-state-2))
