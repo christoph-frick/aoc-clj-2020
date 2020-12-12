@@ -1,9 +1,7 @@
 (ns aoc-clj-2020.solution-9
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
-            [clojure.string :as str]
-            [clojure.math.combinatorics :as comb]))
+            [clojure.string :as str]))
 
 (defn parse
   [s]

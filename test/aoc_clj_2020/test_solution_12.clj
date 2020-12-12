@@ -1,5 +1,5 @@
 (ns ^:day-12 aoc-clj-2020.test-solution-12
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest is are]]
             [aoc-clj-2020.solution-12 :as t]))
 
 (def example
@@ -33,7 +33,7 @@ F11")
 (deftest test-run-2
   (is (= 286 (->> example (t/parse) (t/run t/rules-2 t/initial-state-2) (t/distance)))))
 
-(deftest test-step-1
+(deftest test-step-2
   (is (= [t/initial-state-2
           {:dir :E :pos [100 10] :wp [10 1]} ; F10
           {:dir :E :pos [100 10] :wp [10 4]} ; N3

@@ -1,5 +1,5 @@
 (ns ^:day-4 aoc-clj-2020.test-solution-4
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest is are]]
             [aoc-clj-2020.solution-4 :as t]))
 
 (def test-data

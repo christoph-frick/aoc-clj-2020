@@ -1,5 +1,5 @@
 (ns ^:day-1 aoc-clj-2020.test-solution-1
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest is are]]
             [aoc-clj-2020.solution-1 :as t]))
 
 (deftest test-sum=2020?

@@ -1,5 +1,5 @@
 (ns ^:day-3 aoc-clj-2020.test-solution-3
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest is are]]
             [aoc-clj-2020.solution-3 :as t]))
 
 (def tree-map ["..##......."
@@ -27,5 +27,5 @@
 
 (deftest test-solution
   (are [f r] (= r (f))
-    t/part-1 252  
+    t/part-1 252
     t/part-2 2608962048))

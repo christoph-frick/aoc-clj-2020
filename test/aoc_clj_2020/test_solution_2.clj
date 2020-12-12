@@ -1,5 +1,5 @@
 (ns ^:day-2 aoc-clj-2020.test-solution-2
-  (:require [clojure.test :refer [deftest testing is are]]
+  (:require [clojure.test :refer [deftest is are]]
             [aoc-clj-2020.solution-2 :as t]))
 
 (deftest test-parse-line
@@ -38,5 +38,5 @@
 
 (deftest test-solution
   (are [f r] (= r (f))
-    t/part-1 586  
+    t/part-1 586
     t/part-2 352))

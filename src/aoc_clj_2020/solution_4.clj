@@ -1,8 +1,7 @@
 (ns aoc-clj-2020.solution-4
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
-            [clojure.string :as str]))
+            [aoc-clj-2020.util.test :as lt]))
 
 (defn split-passport
   [s]

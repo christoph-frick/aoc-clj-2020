@@ -1,7 +1,6 @@
 (ns aoc-clj-2020.solution-7
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
             [clojure.string :as str]))
 
 (defn parse-line
@@ -46,15 +45,15 @@
 
 (defn count-bag-content
   [lines bag]
-  (let [lut (into {} (map (juxt :bag :contain)) lines)]
-    (let [total* (fn [total k]
-                   (apply + (mapcat
-                             (fn [{:keys [bag amount]}]
-                               [amount (* (total bag) amount)])
-                             (lut k []))))
-          total (let [t (memoize total*)]
-                  (fn s [n] (t s n)))]
-      (total bag))))
+  (let [lut (into {} (map (juxt :bag :contain)) lines)
+        total* (fn [total k]
+                 (apply + (mapcat
+                           (fn [{:keys [bag amount]}]
+                             [amount (* (total bag) amount)])
+                           (lut k []))))
+        total (let [t (memoize total*)]
+                (fn s [n] (t s n)))]
+    (total bag)))
 
 (defn part-1
   []

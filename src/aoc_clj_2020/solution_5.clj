@@ -1,7 +1,5 @@
 (ns aoc-clj-2020.solution-5
   (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
             [clojure.string :as str]))
 
 (defn boarding-pass-to-seat-id

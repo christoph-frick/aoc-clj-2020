@@ -1,8 +1,6 @@
 (ns aoc-clj-2020.solution-12
   (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
-            [clojure.string :as str]))
+            [aoc-clj-2020.util.parse :as lp]))
 
 (defn parse
   [s]
@@ -73,7 +71,7 @@
   (reduce (partial step-1 rules) initial-state instrs))
 
 (defn distance
-  [{:keys [pos] :as state}]
+  [{:keys [pos]}]
   (apply + (map #(Math/abs %) pos)))
 
 (defn build-rules
@@ -126,7 +124,7 @@
          :wp (move wp (move-offsets op) amt)))
 
 (defn rotate-wp
-  [{:keys [pos wp] :as state} {:keys [op amt]}]
+  [{:keys [wp] :as state} {:keys [op amt]}]
   (assoc state
          :wp (pos-rotate wp op amt)))
 
