@@ -34,12 +34,10 @@
    [[0 -1] [1 0]]])
 
 (def rotation-offsets
-  {[:L 270] -3
-   [:L 180] -2
-   [:L  90] -1
-   [:R  90]  1
-   [:R 180]  2
-   [:R 270]  3})
+  (into {} (for [i (range 1 4)
+                 :let [angle (* i 90)]
+                 k [:L :R]]
+             [[k angle] ((if (= :L k) - +) i)])))
 
 (defn rel-rot-in
   [lut dir op amt]
