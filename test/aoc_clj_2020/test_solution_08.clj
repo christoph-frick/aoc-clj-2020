@@ -1,6 +1,6 @@
-(ns ^:day-8 aoc-clj-2020.test-solution-8
+(ns ^:day-08 aoc-clj-2020.test-solution-08
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-8 :as t]))
+            [aoc-clj-2020.solution-08 :as t]))
 
 (def example
   "nop +0

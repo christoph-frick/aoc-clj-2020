@@ -1,6 +1,6 @@
-(ns ^:day-5 aoc-clj-2020.test-solution-5
+(ns ^:day-05 aoc-clj-2020.test-solution-05
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-5 :as t]))
+            [aoc-clj-2020.solution-05 :as t]))
 
 (deftest test-parse-boarding-pass
   (are [bp r] (= r (t/boarding-pass-to-seat-id bp))

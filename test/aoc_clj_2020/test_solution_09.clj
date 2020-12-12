@@ -1,6 +1,6 @@
-(ns ^:day-9 aoc-clj-2020.test-solution-9
+(ns ^:day-09 aoc-clj-2020.test-solution-09
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-9 :as t]))
+            [aoc-clj-2020.solution-09 :as t]))
 
 (def example
   "35

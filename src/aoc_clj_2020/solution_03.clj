@@ -1,4 +1,4 @@
-(ns aoc-clj-2020.solution-3
+(ns aoc-clj-2020.solution-03
   (:require [aoc-clj-2020.util.input :as li]))
 
 (defn count-trees-for-slope

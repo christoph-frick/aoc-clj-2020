@@ -1,4 +1,4 @@
-(ns aoc-clj-2020.solution-1
+(ns aoc-clj-2020.solution-01
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
             [clojure.math.combinatorics :as comb]))

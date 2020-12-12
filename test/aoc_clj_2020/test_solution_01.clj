@@ -1,6 +1,6 @@
-(ns ^:day-1 aoc-clj-2020.test-solution-1
+(ns ^:day-01 aoc-clj-2020.test-solution-01
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-1 :as t]))
+            [aoc-clj-2020.solution-01 :as t]))
 
 (deftest test-sum=2020?
   (are [xs r] (= (t/sum=2020? xs) r)

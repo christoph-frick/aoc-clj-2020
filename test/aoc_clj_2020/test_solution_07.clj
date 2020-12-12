@@ -1,6 +1,6 @@
-(ns ^:day-7 aoc-clj-2020.test-solution-7
+(ns ^:day-07 aoc-clj-2020.test-solution-07
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-7 :as t]))
+            [aoc-clj-2020.solution-07 :as t]))
 
 (def example-1
   "light red bags contain 1 bright white bag, 2 muted yellow bags.

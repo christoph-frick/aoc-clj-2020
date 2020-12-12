@@ -1,6 +1,6 @@
-(ns ^:day-2 aoc-clj-2020.test-solution-2
+(ns ^:day-02 aoc-clj-2020.test-solution-02
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-2 :as t]))
+            [aoc-clj-2020.solution-02 :as t]))
 
 (deftest test-parse-line
   (are [t r] (= (t/parse-line t) r)

@@ -1,6 +1,6 @@
-(ns ^:day-3 aoc-clj-2020.test-solution-3
+(ns ^:day-03 aoc-clj-2020.test-solution-03
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-3 :as t]))
+            [aoc-clj-2020.solution-03 :as t]))
 
 (def tree-map ["..##......."
                "#...#...#.."

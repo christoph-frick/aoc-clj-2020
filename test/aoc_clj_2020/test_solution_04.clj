@@ -1,6 +1,6 @@
-(ns ^:day-4 aoc-clj-2020.test-solution-4
+(ns ^:day-04 aoc-clj-2020.test-solution-04
   (:require [clojure.test :refer [deftest is are]]
-            [aoc-clj-2020.solution-4 :as t]))
+            [aoc-clj-2020.solution-04 :as t]))
 
 (def test-data
 "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd

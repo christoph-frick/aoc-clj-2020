@@ -1,4 +1,4 @@
-(ns aoc-clj-2020.solution-5
+(ns aoc-clj-2020.solution-05
   (:require [aoc-clj-2020.util.input :as li]
             [clojure.string :as str]))
 
