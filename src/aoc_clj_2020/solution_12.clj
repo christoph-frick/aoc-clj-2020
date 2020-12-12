@@ -77,6 +77,15 @@
   [{:keys [pos] :as state}]
   (apply + (map #(Math/abs %) pos)))
 
+(defn build-rules
+  [dir-rule forward-rule rotate-rule]
+  (into {}
+        (for [[keys fun] {#{:N :S :E :W} dir-rule
+                          #{:F} forward-rule
+                          #{:R :L} rotate-rule}
+              k keys]
+          [k fun])))
+
 ; part 1
 
 (defn move-ship-by
@@ -102,13 +111,9 @@
    :dir :E})
 
 (def rules-1
-  {:N move-ship
-   :S move-ship
-   :E move-ship
-   :W move-ship
-   :F move-ship-by-dir
-   :R rotate-ship
-   :L rotate-ship})
+  (build-rules move-ship
+               move-ship-by-dir
+               rotate-ship))
 
 ; part 2
 
@@ -132,13 +137,9 @@
    :dir :E})
 
 (def rules-2
-  {:N move-wp
-   :S move-wp
-   :E move-wp
-   :W move-wp
-   :F move-ship-by-wp
-   :R rotate-wp
-   :L rotate-wp})
+  (build-rules move-wp
+               move-ship-by-wp
+               rotate-wp))
 
 (defn part
   [input rules initial-state]
