@@ -17,3 +17,11 @@
   "Split a string on double line breaks"
   [s]
   (str/split s #"\n\n"))
+
+(defn line-parser
+  [re & mappings]
+  (fn [s]
+    (into {} (map (fn [[k f] v]
+                    [k (f v)])
+                  (partition 2 mappings)
+                  (rest (re-find re s))))))

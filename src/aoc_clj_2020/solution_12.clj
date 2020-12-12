@@ -6,11 +6,12 @@
 
 (defn parse
   [s]
-  (mapv (fn [line]
-          (let [[_ op amt] (re-find #"(.)(\d+)" line)]
-            {:op (keyword op)
-             :amt (lp/atoi amt)}))
-        (str/split-lines s)))
+  (lp/lines-to
+   (lp/line-parser
+    #"(.)(\d+)"
+    :op keyword
+    :amt lp/atoi)
+   s))
 
 (def directions
   [:N

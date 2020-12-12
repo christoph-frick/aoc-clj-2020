@@ -3,23 +3,21 @@
             [aoc-clj-2020.util.parse :as lp]
             [aoc-clj-2020.util.test :as lt]))
 
-(defn parse-line
-  [t]
-  (let [[_ min max char password] (re-find #"(\d+)-(\d+)\s(.): (.*)" t)]
-    {:min (lp/atoi min)
-     :max (lp/atoi max)
-     :char (first char)
-     :password password}))
+(def parse-line
+  (lp/line-parser
+   #"(\d+)-(\d+)\s(.): (.*)"
+   :min lp/atoi
+   :max lp/atoi
+   :char first
+   :password identity))
+
+(defn parse
+  [s]
+  (lp/lines-to parse-line s))
 
 (defn in-range?
   [{:keys [min max]} n]
   (<= min n max))
-
-(defn parse-input
-  [file-name]
-  (into []
-        (map parse-line)
-        (li/read-lines file-name)))
 
 (defn valid-frequency?
   [{:keys [char password] :as entry}]
@@ -36,8 +34,8 @@
 
 (defn part-1
   []
-  (lt/count-valid valid-frequency? (parse-input "2.txt")))
+  (lt/count-valid valid-frequency? (parse (li/read-input "2.txt"))))
 
 (defn part-2
   []
-  (lt/count-valid valid-location? (parse-input "2.txt")))
+  (lt/count-valid valid-location? (parse (li/read-input "2.txt"))))

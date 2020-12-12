@@ -4,14 +4,14 @@
             [aoc-clj-2020.util.test :as lt]
             [clojure.string :as str]))
 
-(defn parse-op
-  [s]
-  (let [[_ op ofs] (re-find #"(\w+) ([+-]\d+)" s)]
-    {:op (keyword op) :ofs (lp/atoi ofs)}))
-
 (defn parse-program
   [lines]
-  (mapv parse-op lines))
+  (lp/lines-to
+   (lp/line-parser
+    #"(\w+) ([+-]\d+)"
+    :op keyword
+    :ofs lp/atoi)
+   lines))
 
 (defn op-nop
   [state _]
@@ -87,7 +87,7 @@
 
 (defn part-1
   []
-  (->> (li/read-lines "8.txt")
+  (->> (li/read-input "8.txt")
        (parse-program)
        (setup-state)
        (run-program)
@@ -96,7 +96,7 @@
 
 (defn part-2
   []
-  (->> (li/read-lines "8.txt")
+  (->> (li/read-input "8.txt")
        (parse-program)
        (setup-state)
        (fix-program)
