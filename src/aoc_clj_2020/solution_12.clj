@@ -13,91 +13,143 @@
         (str/split-lines s)))
 
 (def directions
-  [:E
+  [:N
+   :E
    :S
-   :W
-   :N])
+   :W])
+
+(def direction-indices
+  (into {} (map vector directions (range))))
 
 (def move-offsets
-  {:N [0 -1]
+  {:N [0 1]
    :E [1 0]
-   :S [0 1]
+   :S [0 -1]
    :W [-1 0]})
 
-(def rotations
-  (into {}
-        (for [[d & rots] (take 4 (partition 4 1 (cycle directions)))
-              r (range 1 4)]
-          [[d (* r 90)] (nth rots (dec r))])))
+(def rotation-matrices
+  [[[1 0] [0 1]],
+   [[0 1] [-1 0]],
+   [[-1 0] [0 -1]],
+   [[0 -1] [1 0]]])
 
-(def left-to-right
-  {90 270
-   180 180
-   270 90})
+(def rotation-offsets
+  {[:L 270] -3
+   [:L 180] -2
+   [:L  90] -1
+   [:R  90]  1
+   [:R 180]  2
+   [:R 270]  3})
+
+(defn rel-rot-in
+  [lut dir op amt]
+  (let [dir-ofs (direction-indices dir)
+        rot-ofs (rotation-offsets [op amt])]
+    (nth lut (mod (+ dir-ofs rot-ofs) 4))))
 
 (defn pos-translate
   [[ax ay] [bx by]]
   [(+ ax bx) (+ ay by)])
 
+(defn pos-rel
+  [[ax ay] [bx by]]
+  [(- bx ax) (- by ay)])
+
 (defn pos-scale
   [[ax ay] factor]
   [(* ax factor) (* ay factor)])
 
-(defn rotate
+(defn pos-rotate
+  [[x y] op amt]
+  (let [[[a b] [c d]] (rel-rot-in rotation-matrices :N op amt)]
+    [(+ (* x a) (* y b))
+     (+ (* x c) (* y d))]))
+
+(defn move
+  [pos dir amt]
+  (pos-translate pos (pos-scale dir amt)))
+
+(defn rotate-ship
   [{:keys [dir] :as state} {:keys [op amt]}]
   (assoc state
-         :dir (rotations [dir (if (= op :L) (left-to-right amt) amt)])))
+         :dir (rel-rot-in directions dir op amt)))
 
-(defn move-abs
-  [{:keys [pos] :as state} {:keys [op amt]}]
+(defn move-ship-by
+  [{:keys [pos] :as state} {:keys [amt]} dir]
   (assoc state
-         :pos (pos-translate
-               pos
-               (pos-scale
-                (move-offsets op)
-                amt))))
+         :pos (move pos dir amt)))
 
-(defn move-rel
-  [{:keys [pos dir] :as state} {:keys [op amt]}]
-  (assoc state
-         :pos (pos-translate
-               pos
-               (pos-scale
-                (move-offsets dir)
-                amt))))
+(defn move-ship
+  [state {:keys [op] :as instr}]
+  (move-ship-by state instr (move-offsets op)))
 
-(def initial-state
+(defn move-ship-by-dir
+  [{:keys [dir] :as state} instr]
+  (move-ship-by state instr (move-offsets dir)))
+
+(def initial-state-1
   {:pos [0 0]
    :dir :E})
 
-(def rules
-  {:N move-abs
-   :S move-abs
-   :E move-abs
-   :W move-abs
-   :F move-rel
-   :R rotate
-   :L rotate})
+(def rules-1
+  {:N move-ship
+   :S move-ship
+   :E move-ship
+   :W move-ship
+   :F move-ship-by-dir
+   :R rotate-ship
+   :L rotate-ship})
+
+(defn move-ship-by-wp
+  [{:keys [wp] :as state} instr]
+  (move-ship-by state instr wp))
+
+(defn move-wp
+  [{:keys [wp] :as state} {:keys [op amt]}]
+  (assoc state
+         :wp (move wp (move-offsets op) amt)))
+
+(defn rotate-wp
+  [{:keys [pos wp] :as state} {:keys [op amt]}]
+  (assoc state
+         :wp (pos-rotate wp op amt)))
+
+(def initial-state-2
+  {:pos [0 0]
+   :wp [10 1]
+   :dir :E})
+
+(def rules-2
+  {:N move-wp
+   :S move-wp
+   :E move-wp
+   :W move-wp
+   :F move-ship-by-wp
+   :R rotate-wp
+   :L rotate-wp})
 
 (defn step-1
-  [state {:keys [op] :as instr}]
+  [rules state {:keys [op] :as instr}]
   ((rules op) state instr))
 
 (defn run
-  [instrs]
-  (reduce step-1 initial-state instrs))
+  [rules initial-state instrs]
+  (reduce (partial step-1 rules) initial-state instrs))
 
 (defn distance
   [{:keys [pos] :as state}]
-  (apply + pos))
+  (apply + (map #(Math/abs %) pos)))
 
 (defn part-1
   []
   (->> (li/read-input "12.txt")
        (parse)
-       (run)
+       (run rules-1 initial-state-1)
        (distance)))
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-input "12.txt")
+       (parse)
+       (run rules-2 initial-state-2)
+       (distance)))
