@@ -9,6 +9,10 @@
   [s]
   (Long/parseLong s))
 
+(defn btol
+  [s]
+  (Long/parseLong s 2))
+
 (defn lines-to
   [transform s]
   (mapv transform (str/split-lines s)))
