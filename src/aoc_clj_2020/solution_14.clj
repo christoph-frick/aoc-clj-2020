@@ -1,8 +1,9 @@
 (ns aoc-clj-2020.solution-14
   (:require [aoc-clj-2020.util.input :as li]
             [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]
-            [clojure.string :as str]))
+            [aoc-clj-2020.util.format :as lf]
+            [clojure.string :as str]
+            [clojure.pprint :as pp]))
 
 (defn parse
   [s]
@@ -15,17 +16,17 @@
    s))
 
 
-(def initial-state
+(def initial-state-1
   {:mask-and (bit-not 0)
    :mask-or 0
    :memory {}})
 
 (defn mask-to-bin
   [s]
-  {:mask-or (Long/parseLong (str/escape s {\X \0}) 2)
-   :mask-and (Long/parseLong (str/escape s {\X \1}) 2)})
+  {:mask-or (lp/btol (str/escape s {\X \0}))
+   :mask-and (lp/btol (str/escape s {\X \1}))})
 
-(defn apply-mask
+(defn apply-mask-1
   [{:keys [mask-or mask-and]} value]
   (->> value
        (bit-or mask-or)
@@ -37,23 +38,58 @@
     :mask (let [[mask] params]
             (merge state (mask-to-bin mask)))
     :mem (let [[addr value] params]
-           (update state :memory assoc addr (apply-mask state value)))))
-
-(defn run
-  [initial-state instrs]
-  (reduce step-1 initial-state instrs))
+           (update state :memory assoc addr (apply-mask-1 state value)))))
 
 (defn sum-memory
   [{:keys [memory]}]
   (apply + (vals memory)))
 
+(defn apply-mask-2
+  [{:keys [mask]} value]
+  (let [bin-value (pp/cl-format nil "~36,'0d" (lf/ltob value))]
+    (str/join
+     (map (fn [v m]
+            (if (= m \0)
+              v
+              m))
+          bin-value
+          mask))))
+
+(defn mask-to-values
+  [mask]
+  (->>
+   mask
+   (reduce (fn [acc c]
+             (if (= c \X)
+               (for [a acc
+                     b [\0 \1]]
+                 (conj a b))
+               (map #(conj % c) acc)))
+           [[]])
+   (map (comp lp/btol str/join))))
+
+(def initial-state-2
+  {:memory {}})
+
+(defn step-2
+  [state [instr & params]]
+  (case instr
+    :mask (let [[mask] params]
+            (assoc state :mask mask))
+    :mem (let [[addr value] params
+               all-addr (-> (apply-mask-2 state addr) (mask-to-values))]
+           (update state :memory #(reduce (fn [m o] (assoc m o value)) % all-addr)))))
+
 (defn part-1
   []
   (->> (li/read-input "14.txt")
        (parse)
-       (run initial-state)
+       (reduce step-1 initial-state-1)
        (sum-memory)))
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-input "14.txt")
+       (parse)
+       (reduce step-2 initial-state-2)
+       (sum-memory)))
