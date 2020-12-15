@@ -1,7 +1,5 @@
 (ns aoc-clj-2020.solution-15
-  (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.test :as lt]))
+  (:require [aoc-clj-2020.util.parse :as lp]))
 
 (defn parse
   [s]
@@ -10,50 +8,26 @@
 (defn setup
   [game]
   {:turn (count game)
-   :recent (into {}
-                 (map #(vector %1 (list %2))
-                      game
-                      (iterate inc 1)))
+   :recent (into {} (map vector (butlast game) (iterate inc 1)))
    :spoken (last game)})
 
-(defn inc-turn
-  [game]
-  (update game :turn inc))
-
-(defn recent
-  [{:keys [recent spoken]}]
-  (when (and (contains? recent spoken)
-             (< 1 (count (recent spoken))))
-    (apply - (get recent spoken))))
-
-(defn update-recent
-  [{:keys [turn spoken] :as game}]
-  (update-in game
-             [:recent spoken]
-             #(take 2 (conj % turn))))
-
-(defn spoken
-  [game nr]
-  (assoc game :spoken nr))
-
-(defn announce
-  [game]
-  (-> game
-      (spoken (or (recent game) 0))
-      update-recent))
-
 (defn step
-  [game]
-  (-> game
-      (inc-turn)
-      (announce)))
+  [{:keys [recent turn spoken] :as game}]
+  (let [spoken' (if (contains? recent spoken)
+                  (- turn (get recent spoken))
+                  0)]
+    (-> game
+        (assoc-in [:recent spoken] turn)
+        (assoc :spoken spoken'
+               :turn (inc turn)))))
 
 (defn run
-  [game turn]
-  (let [{:keys [spoken]} (first
-                          (filter
-                           #(= turn (:turn %))
-                           (iterate step (setup game))))]
+  [game upto-turn]
+  (let [{:keys [spoken]} (loop [game (setup game)]
+                           (let [game' (step game)]
+                             (if (= upto-turn (:turn game'))
+                               game'
+                               (recur game'))))]
     spoken))
 
 (defn part-1
