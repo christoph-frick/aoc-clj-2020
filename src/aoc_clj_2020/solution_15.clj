@@ -48,18 +48,18 @@
       (inc-turn)
       (announce)))
 
-(defn run-2020
-  [game]
+(defn run
+  [game turn]
   (let [{:keys [spoken]} (first
                           (filter
-                           #(= 2020 (:turn %))
+                           #(= turn (:turn %))
                            (iterate step (setup game))))]
     spoken))
 
 (defn part-1
   []
-  (-> "8,0,17,4,1,12" parse run-2020))
+  (-> "8,0,17,4,1,12" parse (run 2020)))
 
 (defn part-2
   []
-  nil)
+  (-> "8,0,17,4,1,12" parse (run 30000000)))
