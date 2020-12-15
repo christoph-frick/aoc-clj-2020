@@ -57,16 +57,15 @@
 
 (defn mask-to-values
   [mask]
-  (->>
-   mask
-   (reduce (fn [acc c]
-             (if (= c \X)
-               (for [a acc
-                     b [\0 \1]]
-                 (conj a b))
-               (map #(conj % c) acc)))
-           [[]])
-   (map (comp lp/btol str/join))))
+  (->> mask
+       (map {\0 [0]
+             \1 [1]
+             \X [0 1]})
+       (reduce (fn [acc m]
+                 (for [a acc
+                       b m]
+                   (bit-or (bit-shift-left a 1) b)))
+               [0])))
 
 (def initial-state-2
   {:memory {}})
