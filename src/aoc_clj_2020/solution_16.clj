@@ -12,12 +12,11 @@
 
 (defn parse-rule-ranges
   [s]
-  (reduce (fn [acc [_ _ s e]]
-            (into acc
+  (into #{}
+        (mapcat (fn [[_ _ s e]]
                   (range (lp/atoi s)
                          (inc (lp/atoi e)))))
-          #{}
-          (re-seq #"((\d+)-(\d+))" s)))
+        (re-seq #"((\d+)-(\d+))" s)))
 
 (defn parse-rule
   [s]
@@ -33,7 +32,7 @@
 
 (defn combine-rules
   [{:keys [rules]}]
-  (into #{} (apply concat (vals rules))))
+  (into #{} cat (vals rules)))
 
 (defn find-simple-violation
   [combined-rules ticket]
@@ -41,20 +40,17 @@
 
 (defn sum-simple-violations
   [{:keys [nearby-tickets] :as config}]
-  (let [combined-rules (combine-rules config)]
-    (reduce
-     #(apply + %1 (find-simple-violation combined-rules %2))
-     0
-     nearby-tickets)))
+  (transduce
+   (mapcat (partial find-simple-violation (combine-rules config)))
+   + 0
+   nearby-tickets))
 
 (defn filter-and-append-valid-tickets
   [{:keys [your-ticket nearby-tickets] :as config}]
-  (let [combined-rules (combine-rules config)]
-    (assoc config :valid-tickets
-           (into []
-                 (remove
-                  #(seq (find-simple-violation combined-rules %)))
-                 (conj nearby-tickets your-ticket)))))
+  (assoc config :valid-tickets
+         (into []
+               (remove #(seq (find-simple-violation (combine-rules config) %)))
+               (conj nearby-tickets your-ticket))))
 
 (defn find-rules-for-column
   [{:keys [rules]} col]
