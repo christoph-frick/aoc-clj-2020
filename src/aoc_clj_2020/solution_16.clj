@@ -26,7 +26,7 @@
 
 (defn parse
   [s]
-  (let [[rules-s your-ticket-s nearby-tickets-s] (str/split s #"\n\n")]
+  (let [[rules-s your-ticket-s nearby-tickets-s] (lp/split-groups s)]
     {:rules (into {} (map parse-rule) (str/split-lines rules-s))
      :your-ticket (parse-ticket (second (str/split-lines your-ticket-s)))
      :nearby-tickets (mapv parse-ticket (rest (str/split-lines nearby-tickets-s)))}))
