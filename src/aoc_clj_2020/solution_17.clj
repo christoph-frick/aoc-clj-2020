@@ -1,53 +1,73 @@
 (ns aoc-clj-2020.solution-17
   (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]
             [aoc-clj-2020.util.transform :as transform]
+            [clojure.math.combinatorics :as comb]
             [clojure.string :as str]))
 
 (defn parse
-  [s]
+  [s dim]
   (into #{}
-        (for [[y row] (transform/indexed (str/split-lines s))
-              [x c] (transform/indexed row)
-              :when (= c \#)]
-          [x y 0])))
-
-(def ONE [1 1 1])
+        (let [filler (into [] (repeat (- dim 2) 0))]
+          (for [[y row] (transform/indexed (str/split-lines s))
+                [x c] (transform/indexed row)
+                :when (= c \#)]
+            (into [x y] filler)))))
 
 (defn coord-op
-  [op [ax ay az] [bx by bz]]
-  [(op ax bx) (op ay by) (op az bz)])
+  ([op a]
+   (mapv op a))
+  ([op a b]
+   (mapv op a b)))
+
+(defn coord
+  [dim init]
+  (into [] (repeat dim init)))
+
+(defn coord-zero?
+  [a]
+  (apply = 0 a))
 
 (defn bounding-box
   [game]
-  (let [[mn mx] (reduce (fn [[mn mx] x]
-                          [(coord-op min mn x) (coord-op max mx x)])
-                        [(first game) (first game)]
-                        game)]
-    [(coord-op - mn ONE) (coord-op + mx ONE)]))
+  (let [[mn mx]
+        (reduce (fn [[mn mx] x]
+                  [(coord-op min mn x) (coord-op max mx x)])
+                [(first game) (first game)]
+                game)]
+    [(coord-op dec mn) (coord-op inc mx)]))
+
+(defn coord-seq
+  [min-coord max-coord]
+  (apply comb/cartesian-product
+         (map
+           (fn [[a b]]
+             (range a (inc b)))
+           (transform/transpose [min-coord max-coord]))))
+
+(def neighbour-coords
+  (memoize (fn [dim]
+             (remove coord-zero?
+                     (coord-seq (coord dim -1) (coord dim 1))))))
 
 (defn count-active-neighbours
   [game coord]
-  (count
-   (filter (partial contains? game)
-           (let [r (range -1 2)]
-             (for [x r, y r, z r
-                   :when (not (= 0 x y z))]
-               (coord-op + coord [x y z]))))))
+  (->> (neighbour-coords (count coord))
+       (map (partial coord-op + coord))
+       (filter (partial contains? game))
+       (count)))
+
+(defn activiate?
+  [game coord]
+  (let [active? (contains? game coord)
+        neighbour-count (count-active-neighbours game coord)]
+    (or (and active? (<= 2 neighbour-count 3))
+        (and (not active?) (= neighbour-count 3)))))
 
 (defn step
   [game]
-  (let [[[min-x min-y min-z] [max-x max-y max-z]] (bounding-box game)]
-    (into #{}
-          (for [x (range min-x (inc max-x))
-                y (range min-y (inc max-y))
-                z (range min-z (inc max-z))
-                :let [coord [x y z]
-                      active? (contains? game coord)
-                      neighbour-count (count-active-neighbours game coord)]
-                :when (or (and active? (<= 2 neighbour-count 3))
-                          (and (not active?) (= neighbour-count 3)))]
-            coord))))
+  (into #{}
+        (filter (partial activiate? game))
+        (apply coord-seq (bounding-box game))))
 
 (defn run
   [game steps]
@@ -58,10 +78,13 @@
 (defn part-1
   []
   (-> (li/read-input "17.txt")
-      (parse)
+      (parse 3)
       (run 6)
       (count)))
 
 (defn part-2
   []
-  nil)
+  (-> (li/read-input "17.txt")
+      (parse 4)
+      (run 6)
+      (count)))
