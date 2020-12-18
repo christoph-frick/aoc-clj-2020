@@ -22,13 +22,26 @@
                          :op symbol
                          :paren-term (fn [& terms] terms)})))
 
-(defn term->ast
+(defn term->ast-ltr
   [term]
   (if (seq? term)
     (reduce (fn [a [op b]]
-              [op [a (term->ast b)]])
-            (term->ast (first term))
+              [op [a (term->ast-ltr b)]])
+            (term->ast-ltr (first term))
             (partition 2 (rest term)))
+    term))
+
+(defn term->ast-plus-pred
+  [term]
+  (if (seq? term)
+    (reduce (fn [a [i [op b]]]
+              (if (and (= op '+) (pos? i))
+                (update-in a [1 1] (fn [a'] [op [a' (term->ast-plus-pred b)]]))
+                [op [a (term->ast-plus-pred b)]]))
+            (term->ast-plus-pred (first term))
+            (map vector
+                 (range)
+                 (partition 2 (rest term))))
     term))
 
 (defn solve
@@ -39,7 +52,7 @@
     instr))
 
 (defn calc
-  [formula]
+  [term->ast formula]
   (-> formula
       parse
       term->ast
@@ -48,9 +61,11 @@
 (defn part-1
   []
   (->> (li/read-lines "18.txt")
-       (map calc)
+       (map (partial calc term->ast-ltr))
        (apply +)))
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-lines "18.txt")
+       (map (partial calc term->ast-plus-pred))
+       (apply +)))
