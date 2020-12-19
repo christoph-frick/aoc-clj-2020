@@ -45,14 +45,38 @@
             (apply-rule (get rules i)))]
     (re-pattern (re 0))))
 
-(defn run
+(defn read-input
   [input]
   (let [[rules-s messages-s] (lp/split-groups input)
-        rules (parse rules-s)
-        re (rules->re rules)
         messages (str/split-lines messages-s)]
+    {:rules rules-s
+     :messages messages}))
+
+(defn run
+  [input]
+  (let [{:keys [rules messages]} (read-input input)
+        rules (parse rules)
+        re (rules->re rules)]
     (count
      (filter (partial re-matches re) messages))))
+
+(defn parser-8-42
+  [rules-s]
+  (-> (str "start: 0\n" rules-s)
+      (str/replace "8: 42" "8: 42 | 42 8")
+      (str/replace "11: 42 31" "11: 42 31 | 42 11 31")
+      (str/replace #"(\d+)" "r$1")
+      (str/replace ":" " =")
+      (insta/parser)))
+
+(defn run-8-42
+  [input]
+  (let [{:keys [rules messages]} (read-input input)
+        parser (parser-8-42 rules)]
+    (count
+     (remove insta/failure?
+             (map parser
+                  messages)))))
 
 (defn part-1
   []
@@ -61,4 +85,5 @@
 
 (defn part-2
   []
-  nil)
+  (-> (li/read-input "19.txt")
+      (run-8-42)))
