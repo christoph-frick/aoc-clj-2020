@@ -42,7 +42,13 @@ sqjhc mxmxvkd sbzzf (contains fish)")
               (t/parse)
               (t/count-allergen-free)))))
 
+(deftest test-canonical-dangerous-ingredient-list
+  (is (= "mxmxvkd,sqjhc,fvjkl"
+         (->> data-1
+              (t/parse)
+              (t/canonical-dangerous-ingredient-list)))))
+
 (deftest test-solution-21
   (are [f r] (= r (f))
     t/part-1 1685
-    t/part-2 nil))
+    t/part-2 "ntft,nhx,kfxr,xmhsbd,rrjb,xzhxj,chbtp,cqvc"))

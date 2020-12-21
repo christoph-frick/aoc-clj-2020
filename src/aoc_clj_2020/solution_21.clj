@@ -3,6 +3,7 @@
             [aoc-clj-2020.util.parse :as lp]
             [aoc-clj-2020.util.test :as lt]
             [instaparse.core :as insta]
+            [clojure.string :as str]
             [clojure.set :as set]))
 
 (def line-parser
@@ -69,8 +70,13 @@
   [xs]
   (apply +
          (vals
-           (select-keys (ingredient-frequencies xs)
-                        (allergen-free xs)))))
+          (select-keys (ingredient-frequencies xs)
+                       (allergen-free xs)))))
+
+(defn canonical-dangerous-ingredient-list
+  [xs]
+  (let [allergens (solve-allergens xs)]
+    (str/join "," (map val (sort-by key allergens)))))
 
 (defn part-1
   []
@@ -80,4 +86,6 @@
 
 (defn part-2
   []
-  nil)
+  (->> (li/read-input "21.txt")
+       (parse)
+       (canonical-dangerous-ingredient-list)))
