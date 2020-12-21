@@ -32,35 +32,32 @@
 
 (defn solve-allergens
   [xs]
-  (let [unions (reduce
-                (partial merge-with set/intersection)
-                {}
-                (for [{:keys [ingredients allergens]} xs
-                      allergen allergens]
-                  {allergen ingredients}))
+  (let [initial (reduce (partial merge-with set/intersection)
+                        (for [{:keys [ingredients allergens]} xs
+                              allergen allergens]
+                          {allergen ingredients}))
         count=1? (fn [v] (= 1 (count v)))
-        remove-val (fn [m rm]
-                     (reduce
-                      (fn [m k]
-                        (if (count=1? (m k))
+        remove-in-vals (fn [m rm]
+                         (reduce
+                          (fn [m k]
+                            (if (count=1? (m k))
+                              m
+                              (update m k disj rm)))
                           m
-                          (update m k disj rm)))
-                      m
-                      (keys m)))]
-    (loop [result unions]
+                          (keys m)))]
+    (loop [result initial]
       (if (every? count=1? (vals result))
         (into {} (map (juxt key (comp first val))) result)
         (let [{done true} (group-by count=1? (vals result))]
-          (recur (reduce remove-val result (map first done))))))))
+          (recur (reduce remove-in-vals result (map first done))))))))
 
 (defn allergen-free
   [xs]
-  (let [allergens (->> xs (solve-allergens) (vals) (into #{}))]
-    (into #{}
-          (comp
-           (mapcat :ingredients)
-           (remove allergens))
-          xs)))
+  (into #{}
+        (comp
+         (mapcat :ingredients)
+         (remove (->> xs (solve-allergens) (vals) (into #{}))))
+        xs))
 
 (defn ingredient-frequencies
   [xs]
