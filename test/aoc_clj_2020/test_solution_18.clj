@@ -31,7 +31,7 @@
     "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2" 13632))
 
 (deftest test-ast-plus-pred
-  (are [formula restult] (= restult (-> formula t/parse t/term->ast-plus-pred (doto println)))
+  (are [formula restult] (= restult (-> formula t/parse t/term->ast-plus-pred))
     "1 + 2" ['+ [1 2]]
     "2 * 3 + (4 * 5)" ['* [2 ['+ [3 ['* [4 5]]]]]]
     "(2 * 3) + (4 * 5)" ['+ [['* [2 3]] ['* [4 5]]]]))
