@@ -2,7 +2,7 @@
 {:tests [{:id          :unit
           :test-paths  ["test" "src"]
           :ns-patterns [".*"]
-          :focus-meta [:day-22 :lib]}]
+          :focus-meta [:day-23 :lib]}]
  :plugins [:kaocha.plugin/profiling
            :kaocha.plugin/notifier]
  :kaocha.plugin.notifier/command "terminal-notifier -message '%{message}' -title '%{title}'"
