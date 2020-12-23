@@ -6,7 +6,9 @@
   "389125467")
 
 (deftest test-parse
-  (is (= [3 8 9 1 2 5 4 6 7]
+  (is (= {:game [3 8 9 1 2 5 4 6 7]
+          :min 1
+          :max 9}
          (t/parse data1))))
 
 (deftest test-step-10
@@ -21,10 +23,11 @@
           [6 7 4 1 5 8 3 9 2]
           [5 7 4 1 8 3 9 2 6]
           [8 3 7 4 1 9 2 6 5]]
-         (reductions
-          (fn [game _] (t/step game))
-          (t/parse data1)
-          (range 10)))))
+         (map :game
+              (reductions
+               (fn [game _] (t/step game))
+               (t/parse data1)
+               (range 10))))))
 
 (deftest test-run
   (are [steps result] (= result (-> data1
@@ -33,6 +36,12 @@
                                     (t/solution-1)))
     10 "92658374"
     100 "67384529"))
+
+#_(deftest test-part2
+  (is (= 149245887792 (-> data1
+                          (t/parse 1000000)
+                          (t/run 10000000)
+                          (t/solution-2)))))
 
 (deftest test-solution-23
   (are [f r] (= r (f))

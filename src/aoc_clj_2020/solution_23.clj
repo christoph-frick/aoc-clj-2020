@@ -6,8 +6,20 @@
 ; should be done with a linked ring
 
 (defn parse
-  [s]
-  (map lp/atoi (re-seq #"\d" s)))
+  ([s]
+   (parse s nil))
+  ([s pad-to]
+   (let [game (map lp/atoi (re-seq #"\d" s))
+         [mn mx] ((juxt first last) (apply sorted-set game))
+         game (if pad-to
+                (into game (range (inc mx) (inc pad-to)))
+                game)
+         mx (if pad-to
+              (+ mx pad-to)
+              mx)]
+     {:game game
+      :min mn
+      :max mx})))
 
 (defn shift-to
   [xs fst]
@@ -20,23 +32,25 @@
         (first xs)))
 
 (defn next-start
-  [start remaining]
-  (let [search (into (sorted-set start) remaining)
-        [mn mx] ((juxt first last) search)]
-    (loop [target (dec start)]
-      (if (contains? search target)
-        target
-        (recur  (if (< target mn) mx (dec target)))))))
+  [start forbidden mn mx]
+  (loop [target (dec start)]
+    (println start forbidden mn mx target)
+    (if (and (>= target mn)
+             (not (contains? forbidden target)))
+      target
+      (recur  (if (< target mn) mx (dec target))))))
 
 (defn step
-  [[start h1 h2 h3 & remaining]]
-  (let [next-start (next-start start remaining)
+  [{:keys [game min max] :as state}]
+  (let [[start h1 h2 h3 & remaining] game
+        next-start (next-start start #{h1 h2 h3} min max)
         result (concat [next-start]
                        [h1 h2 h3]
                        (rest (shift-to (conj remaining start) next-start)))]
-    (-> result
-        (shift-to start)
-        (shift-list-1))))
+    (assoc state
+           :game (-> result
+                     (shift-to start)
+                     (shift-list-1)))))
 
 (defn run
   [game nr]
@@ -45,10 +59,15 @@
     (recur (step game) (dec nr))))
 
 (defn solution-1
-  [game]
+  [{game :game}]
   (->> (shift-to game 1)
        (rest)
        (str/join "")))
+
+(defn solution-2
+  [game]
+  (let [[_ a b] (drop-while (partial not= 1) game)]
+    (* a b)))
 
 (defn part-1
   []
