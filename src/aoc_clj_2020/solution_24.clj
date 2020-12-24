@@ -1,7 +1,6 @@
 (ns aoc-clj-2020.solution-24
   (:require [aoc-clj-2020.util.input :as li]
-            [aoc-clj-2020.util.parse :as lp]
-            [aoc-clj-2020.util.transform :as transform]))
+            [aoc-clj-2020.util.parse :as lp]))
 
 ; https://www.redblobgames.com/grids/hexagons/
 
@@ -46,7 +45,7 @@
   [instr]
   (reduce move ZERO instr))
 
-(defn solution1
+(defn setup-grid
   [instrs]
   (reduce
    (fn [grid instr]
@@ -58,13 +57,60 @@
   [grid]
   (count grid))
 
+(defn neigbours
+  [pos]
+  (map
+   (partial move pos)
+   (keys directions)))
+
+(defn count-flipped-neighbours
+  [grid pos]
+  (count
+   (filter
+    (partial contains? grid)
+    (neigbours pos))))
+
+(defn flip-rule-1
+  "Any black tile with zero or more than 2 black tiles immediately adjacent to it is flipped to white."
+  [grid]
+  (into #{}
+        (filter (fn [pos]
+                  (< 0 (count-flipped-neighbours grid pos) 3)))
+        grid))
+
+(defn flip-rule-2
+  "Any white tile with exactly 2 black tiles immediately adjacent to it is flipped to black."
+  [grid]
+  (into #{}
+        (comp
+         (mapcat neigbours)
+         (remove (partial contains? grid))
+         (filter (fn [pos]
+                   (= 2 (count-flipped-neighbours grid pos)))))
+        grid))
+
+(defn conway-step
+  [grid]
+  (into (flip-rule-1 grid)
+        (flip-rule-2 grid)))
+
+(defn run
+  [grid steps]
+  (if (zero? steps)
+    grid
+    (recur (conway-step grid) (dec steps))))
+
 (defn part-1
   []
-  (->> (li/read-input "24.txt")
+  (-> (li/read-input "24.txt")
        (parse)
-       (solution1)
+       (setup-grid)
        (count-flipped)))
 
 (defn part-2
   []
-  nil)
+  (-> (li/read-input "24.txt")
+      (parse)
+      (setup-grid)
+      (run 100)
+      (count-flipped)))
